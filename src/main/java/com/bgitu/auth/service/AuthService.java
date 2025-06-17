@@ -54,8 +54,7 @@ public class AuthService {
     }
 
     public String authenticate(LoginRequestDTO request) {
-        if (!mentorRepository.existsByEmail(request.getEmail()) ||
-                !studentRepository.existsByEmail(request.getEmail())) {
+        if (!mentorRepository.existsByEmail(request.getEmail()) && !studentRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("User not found");
         }
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
