@@ -2,14 +2,17 @@ package com.bgitu.auth.service;
 
 import com.bgitu.auth.model.Mentor;
 import com.bgitu.auth.model.Role;
+import com.bgitu.auth.model.Student;
 import com.bgitu.auth.repository.MentorRepository;
 import com.bgitu.auth.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
