@@ -6,14 +6,16 @@ import com.bgitu.auth.model.Student;
 import com.bgitu.auth.repository.MentorRepository;
 import com.bgitu.auth.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,40 +26,26 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Проверяем в обеих таблицах
-        Optional<Mentor> mentor = mentorRepository.findByEmail(email);
-        if (mentor.isPresent()) {
-            return createUserDetails(mentor.get(), Role.MENTOR);
+        // Ищем сначала в менторах
+        Mentor mentor = mentorRepository.findByEmail(email)
+                .orElse(null);
+
+        if (mentor != null) {
+            return createUserDetails(mentor.getEmail(), mentor.getPassword(), Role.MENTOR);
         }
 
-        Optional<Student> student = studentRepository.findByEmail(email);
-        if (student.isPresent()) {
-            return createUserDetails(student.get(), Role.STUDENT);
-        }
+        // Ищем в студентах
+        Student student = studentRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        throw new UsernameNotFoundException("User not found with email: " + email);
+        return createUserDetails(student.getEmail(), student.getPassword(), Role.STUDENT);
     }
 
-    private UserDetails createUserDetails(Object user, Role role) {
-        String email;
-        String password;
-
-        if (user instanceof Mentor) {
-            Mentor mentor = (Mentor) user;
-            email = mentor.getEmail();
-            password = mentor.getPassword();
-        } else if (user instanceof Student) {
-            Student student = (Student) user;
-            email = student.getEmail();
-            password = student.getPassword();
-        } else {
-            throw new IllegalArgumentException("Invalid user type");
-        }
-
-        return new org.springframework.security.core.userdetails.User(
-                email,
-                password,
-                Collections.singletonList(new SimpleGrantedAuthority(role.name()))
+    private UserDetails createUserDetails(String email, String password, Role role) {
+        List<GrantedAuthority> authorities = Collections.singletonList(
+                new SimpleGrantedAuthority(role.name())
         );
+
+        return new User(email, password, authorities);
     }
 }

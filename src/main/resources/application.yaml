@@ -2,6 +2,12 @@
 
 server:
   port: 8081
+app:
+  jwt:
+    expiration: 17280 # 24 hours
+    issuer: mentor-platform
+    secret: NR2i2fMCrZMI/QcQw+m3jqYFxCdAna6FaZpfHQBo+c0=
+
 
 spring:
   application:
@@ -17,10 +23,4 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
-app:
-  jwt:
-    access-token-expiration: 17280 # 24 hours
-    issuer: mentor-platform
-    secret: NR2i2fMCrZMI/QcQw+m3jqYFxCdAna6FaZpfHQBo+c0=
 
