@@ -20,6 +20,6 @@ spring:
 
 app:
   jwt:
-    access-token-expiration: 86400
-    refresh-token-expiration: 172800 # 24 ????
+    access-token-expiration: 86400 # 24 hours
+    refresh-token-expiration: 172800
     issuer: mentor-platform
