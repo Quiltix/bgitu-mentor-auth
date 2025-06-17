@@ -20,6 +20,7 @@ spring:
 
 app:
   jwt:
-    access-token-expiration: 86400 # 24 hours
-    refresh-token-expiration: 172800
+    access-token-expiration: 17280 # 24 hours
     issuer: mentor-platform
+    secret: NR2i2fMCrZMI/QcQw+m3jqYFxCdAna6FaZpfHQBo+c0=
+
