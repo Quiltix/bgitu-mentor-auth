@@ -42,7 +42,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     private UserDetails createUserDetails(String email, String password, Role role) {
-        List<GrantedAuthority> authorities = Collections.singletonList(
+        // Гарантируем, что будет только одна роль
+        List<SimpleGrantedAuthority> authorities = Collections.singletonList(
                 new SimpleGrantedAuthority(role.name())
         );
 

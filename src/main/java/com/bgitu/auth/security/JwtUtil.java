@@ -25,17 +25,20 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(UserDetails userDetails) {
+        // Получаем единственную роль пользователя
+        String role = userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElseThrow(() -> new IllegalStateException("User has no roles assigned"));
+
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .claim("roles", userDetails.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()))
+                .claim("role", role)  // Сохраняем как строку, а не список
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSigningKey())
                 .compact();
     }
-
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -55,5 +58,13 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+    public String getRoleFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);  // Получаем роль как строку
     }
 }

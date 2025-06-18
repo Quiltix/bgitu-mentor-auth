@@ -37,19 +37,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
                 String email = jwtUtil.getEmailFromToken(token);
+                String role = jwtUtil.getRoleFromToken(token);  // Новый метод
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+                // Создаем authorities из единственной роли
+                List<SimpleGrantedAuthority> authorities = Collections.singletonList(
+                        new SimpleGrantedAuthority(role)
+                );
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
-                                userDetails.getAuthorities()
+                                authorities
                         );
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
 
-        }
 
         filterChain.doFilter(request, response);
     }
@@ -61,4 +68,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+
 }
